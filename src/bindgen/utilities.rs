@@ -149,6 +149,17 @@ pub trait SynAttributeHelpers {
         })
     }
 
+    /// Searches for attributes like `#[test]`, `#[test(...)]` or `#[test = "..."]`.
+    /// Example:
+    /// - `item.has_attr_word("test")` => `#[test(""]`, `#[test(...)]` or `#[test = "..."]`
+    fn has_attr_any(&self, name: &str) -> bool {
+        self.attrs().iter().any(|attr| match &attr.meta {
+            syn::Meta::Path(path) => path.is_ident(name),
+            syn::Meta::List(list) => list.path.is_ident(name),
+            syn::Meta::NameValue(nv) => nv.path.is_ident(name),
+        })
+    }
+
     /// Searches for attributes like `#[unsafe(test)]`.
     /// Example:
     /// - `item.has_unsafe_attr_word("test")` => `#[unsafe(test)]`
